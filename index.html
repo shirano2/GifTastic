@@ -55,9 +55,11 @@ img{
 
         function showInput() {
             $(".input").empty();
-            $(".input").append("<h2>Add an animal</h2>");
-            $(".input").append("<input type='text'>");
-            $(".input").append("<button id='submit'>Submit</button>");
+            var form=$("<form>");
+            form.append("<h2>Add an animal</h2>");
+            form.append("<input type='text'>");
+            form.append("<input id='submit' type='submit' val='Submit'>");
+            $(".input").append(form);
         }
 
         $(document).on("click",".topic",function(){
@@ -90,7 +92,8 @@ img{
             $(this).attr("data-gif",swap);
         });
 
-        $(document).on("click","#submit",function(){
+        $(document).on("click","#submit",function(e){
+            e.preventDefault();
             topics.push($("input").val());
             showButton();
         });
