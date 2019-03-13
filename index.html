@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GifTastic</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<style>
+*{
+    box-sizing:border-box;
+    text-align: center;
+}
+.container{
+    width:70%;
+    float:left;
+}
+.input {
+    width:30%;
+    float:right;
+}
+.column {
+    width: 300px;
+    height: 300px;
+    background: red;
+    margin: 5px;
+    /* flex-grow: 1; */
+}
+.row {
+    display:flex;
+    background: blue;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    justify-content:space-around;
+}
+img{
+    width:90%;
+    height:70%;
+    margin:0 auto;
+}
+</style>
+<script>
+    $(document).ready(function() {
+        var topics=["dog", "cat", "rabbit", "hamster", "skunk", "goldfish", "bird", "ferret", "turtle", "sugar glider", "chinchilla", "hedgehog", "hermit crab", "gerbil", "pygmy goat", "chicken", "capybara", "teacup pig", "serval", "salamander", "frog"];
+        var apikey="sDqWP1aiJ6v3Zdm916R5NtKSHIMNAK7H";
+        var num=10;
+    
+        function showButton() {
+            $("#buttons").empty();
+            for (var i=0;i<topics.length;i++) {
+                $("#buttons").append("<button class='topic'>"+topics[i]+"</button>");
+            }
+        }
+
+        function showInput() {
+            $(".input").empty();
+            $(".input").append("<h2>Add an animal</h2>");
+            $(".input").append("<input type='text'>");
+            $(".input").append("<button id='submit'>Submit</button>");
+        }
+
+        $(document).on("click",".topic",function(){
+            num=10;
+            var queryURL="https://api.giphy.com/v1/gifs/search?api_key="+ apikey +"&q="+$(this).text()+"&limit="+num;
+            console.log(queryURL);
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function(response) {
+                $(".container").empty();
+                for(var i=0; i<num;i++) {
+                    if(i%5==0) {
+                        var row=$("<div>");
+                        row.addClass("row");
+                        $(".container").append(row);
+                    }
+                    var col=$("<div>");
+                    col.addClass("column");
+                    col.append("<h2>"+response.data[i].rating+"</h2>");
+                    col.append("<img src='"+response.data[i].images["480w_still"].url+"' data-gif='"+response.data[i].images["downsized"].url+"'>");
+                    row.append(col);
+                }
+            });
+        });
+
+        $(document).on("click","img",function(){
+            var swap=$(this).attr("src");
+            $(this).attr("src",$(this).attr("data-gif"));
+            $(this).attr("data-gif",swap);
+        });
+
+        $(document).on("click","#submit",function(){
+            topics.push($("input").val());
+            showButton();
+        });
+
+
+        showButton();
+        showInput();
+
+        
+
+    });
+
+
+    
+
+</script>
+<body>
+<div id="buttons"></div>
+
+<div class="container"></div>
+<div class="input"></div>
+
+    
+</body>
+</html>
