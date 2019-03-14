@@ -47,8 +47,8 @@ body {
     flex:1;
     overflow:hidden;
     min-width:300px;
-    height: 300px;
-    background: red;
+    height: 350px;
+    /* background: red; */
     margin: 5px;
 }
 img{
@@ -69,132 +69,120 @@ h3{
 }
 </style>
 <script>
-    $(document).ready(function() {
-        var topics=["dog", "cat", "rabbit", "hamster", "skunk", "goldfish", "bird", "ferret", "turtle", "sugar glider", "chinchilla", "hedgehog", "hermit crab", "gerbil", "pygmy goat", "chicken", "capybara", "teacup pig", "serval", "salamander", "frog"];
-        var favor=[];
-        var apikey="sDqWP1aiJ6v3Zdm916R5NtKSHIMNAK7H";
-        var num=10;
-        var topic;
-    
-        function showButton() {
-            $("#buttons").empty();
-            for (var i=0;i<topics.length;i++) {
-                $("#buttons").append("<button data-topic='"+topics[i]+"'>"+topics[i]+"</button>");
+$(document).ready(function() {
+    var topics=["dog", "cat", "rabbit", "hamster", "skunk", "goldfish", "bird", "ferret", "turtle", "sugar glider", "chinchilla", "hedgehog", "hermit crab", "gerbil", "pygmy goat", "chicken", "capybara", "teacup pig", "serval", "salamander", "frog"];
+    var favor=[];
+    var apikey="sDqWP1aiJ6v3Zdm916R5NtKSHIMNAK7H";
+    var num=10;
+    var topic;
+
+    function showButton() {
+        $("#buttons").empty();
+        for (var i=0;i<topics.length;i++) {
+            $("#buttons").append("<button data-topic='"+topics[i]+"'>"+topics[i]+"</button>");
+        }
+    }
+
+    function showInput() {
+        $(".input").empty();
+        var form=$("<form>");
+        form.append("<h2>Add an animal</h2>");
+        form.append("<input type='text'><br>");
+        form.append("<input id='submit' type='submit' value='Submit'>");
+        $(".input").append(form);
+    }
+
+    function myFavorite() {
+        $(".input").append("<br><br><br>")
+        $(".input").append("<a id='favlink' href='#'><h2>My Favorite</h2></a>");
+    }
+
+    $(document).on("click","button",function(){
+
+        if($(this).hasClass("fav") || $(this).hasClass("download")) {
+            if($(this).hasClass("fav")){
+                var clone=$(this).siblings("img").clone();
+                favor.push(clone);
             }
-        }
+        } else {
+            $(".favorite").hide();
+            $(".container").show();
+            if($(this).attr("data-num")!=undefined) {
+                num=parseInt($(this).attr("data-num"))+10;
+            } else {
+                num=10;
+            }  
+            topic=$(this).attr("data-topic");  
 
-        function showInput() {
-            $(".input").empty();
-            var form=$("<form>");
-            form.append("<h2>Add an animal</h2>");
-            form.append("<input type='text'><br>");
-            form.append("<input id='submit' type='submit' value='Submit'>");
-            $(".input").append(form);
-        }
-
-        function myFavorite() {
-            $(".input").append("<br><br><br>")
-            $(".input").append("<a id='favlink' href='#'><h2>My Favorite</h2></a>");
-        }
-
-        $(document).on("click","button",function(){
-
-            if($(this).hasClass("fav") || $(this).hasClass("download")) {
-                if($(this).hasClass("fav")){
-                    var clone=$(this).siblings("img").clone();
-                    favor.push(clone);
+            var queryURL="https://api.giphy.com/v1/gifs/search?api_key="+ apikey +"&q="+topic+"&limit="+num;
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function(response) {
+                // console.log(response);
+                $(".container").empty();
+                var col=$("<div>");
+                col.addClass("content");
+                for(var i=0; i<response.data.length;i++) {
+                    var rating=response.data[i].rating;
+                    var title=response.data[i].title;
+                    title=title.substr(0,title.length-4);
+                    var stillImage=response.data[i].images["480w_still"].url;
+                    var movingImage=response.data[i].images["downsized"].url;
+                    var col2=$("<div>");
+                    col2.addClass("each");
+                    col2.append("<h2>Raiting: "+rating+"</h2>");
+                    col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate='"+rating+"' data-title='"+title+"'>");
+                    col2.append("<h3>Title: "+title+"</h3>");
+                    col2.append("<a href='data:image/gif;"+movingImage+"' download='"+title+".gif'><button class='download'>Download</button></a>");
+                    col2.append("<button class='fav'>Favorite</button>");
+                    col.append(col2);
                 }
-                console.log(favor);
-
-            } else {
-                $(".favorite").hide();
-                $(".container").show();
-                if($(this).attr("data-num")!=undefined) {
-                    num=parseInt($(this).attr("data-num"))+10;
-                } else {
-                    num=10;
-                }  
-                topic=$(this).attr("data-topic");  
-
-                var queryURL="https://api.giphy.com/v1/gifs/search?api_key="+ apikey +"&q="+topic+"&limit="+num;
-                $.ajax({
-                    url: queryURL,
-                    method: "GET"
-                }).then(function(response) {
-                    // console.log(response);
-                    $(".container").empty();
-                    var col=$("<div>");
-                    col.addClass("content");
-                    for(var i=0; i<response.data.length;i++) {
-                        var rating=response.data[i].rating;
-                        var title=response.data[i].title;
-                        title=title.substr(0,title.length-4);
-                        var stillImage=response.data[i].images["480w_still"].url;
-                        var movingImage=response.data[i].images["downsized"].url;
-                        var col2=$("<div>");
-                        col2.addClass("each");
-                        col2.append("<h2>Raiting: "+rating+"</h2>");
-                        col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate='"+rating+"' data-title='"+title+"'>");
-                        col2.append("<h3>Title: "+title+"</h3>");
-                        col2.append("<a href='data:image/gif;"+movingImage+"' download='"+title+".gif'><button class='download'>Download</button></a>");
-                        col2.append("<button class='fav'>Favorite</button>");
-                        col.append(col2);
-                    }
-                    $(".container").append(col);
-                    $(".container").append("<button class='add' data-num='"+num+"' data-topic='"+topic+"'>Show More</button>");
+                $(".container").append(col);
+                $(".container").append("<button class='add' data-num='"+num+"' data-topic='"+topic+"'>Show More</button>");
             });
-
-            }
-
-            
-        });
-
-        $(document).on("click","img",function(){
-            if($(this).attr("data-status")=="still") {
-                $(this).attr("data-status","animated");
-                $(this).attr("src",$(this).attr("data-gif"));
-            } else {
-                $(this).attr("data-status","still");
-                $(this).attr("src",$(this).attr("data-still"));
-            }
-        });
-
-        $(document).on("click","#submit",function(e){
-            e.preventDefault();
-            topics.push($("input").val());
-            showButton();
-            $("#buttons button:last-child").trigger("click");
-        });
-
-        $(document).on("click","#favlink",function(e){
-            $(".favorite").empty();
-            $(".favorite").show();
-            $(".container").hide();
-            for(var i=0;i<favor.length;i++) {
-                var rating=favor[i].attr("data-rate");
-                var title=favor[i].attr("data-title");
-                var stillImage=favor[i].attr("data-still");
-                var movingImage=favor[i].attr("data-gif");
-                var col2=$("<div>");
-                col2.addClass("each");
-                col2.append("<h2>Raiting: "+rating+"</h2>");
-                col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate:'"+rating+"' data-title='"+title+"'>");
-                col2.append("<h3>Title: "+title+"</h3>");
-                $(".favorite").append(col2);
-            }
-        });
-
-
-        showButton();
-        showInput();
-        myFavorite();
-
-        
-
+        }
     });
 
-    
+    $(document).on("click","img",function(){
+        if($(this).attr("data-status")=="still") {
+            $(this).attr("data-status","animated");
+            $(this).attr("src",$(this).attr("data-gif"));
+        } else {
+            $(this).attr("data-status","still");
+            $(this).attr("src",$(this).attr("data-still"));
+        }
+    });
 
+    $(document).on("click","#submit",function(e){
+        e.preventDefault();
+        topics.push($("input").val());
+        showButton();
+        $("#buttons button:last-child").trigger("click");
+    });
+
+    $(document).on("click","#favlink",function(e){
+        $(".favorite").empty();
+        $(".favorite").show();
+        $(".container").hide();
+        for(var i=0;i<favor.length;i++) {
+            var rating=favor[i].attr("data-rate");
+            var title=favor[i].attr("data-title");
+            var stillImage=favor[i].attr("data-still");
+            var movingImage=favor[i].attr("data-gif");
+            var col2=$("<div>");
+            col2.addClass("each");
+            col2.append("<h2>Raiting: "+rating+"</h2>");
+            col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate:'"+rating+"' data-title='"+title+"'>");
+            col2.append("<h3>Title: "+title+"</h3>");
+            $(".favorite").append(col2);
+        }
+    });
+
+    showButton();
+    showInput();
+    myFavorite();
+});
 </script>
 <body>
 <div id="buttons"></div>
@@ -203,6 +191,7 @@ h3{
 <div class="container"></div>
 <div class="favorite"></div>
 <!-- <a href="http://www.kgirls.net/files/attach/images/43225/191/044/200e9bb93c5ba4e8c2bafd85cfc4a005.gif" download="w3logo">a</a> -->
+<!-- https://stackoverflow.com/questions/11344531/pure-javascript-store-object-in-cookie -->
 
 
     
