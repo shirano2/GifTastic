@@ -76,6 +76,38 @@ $(document).ready(function() {
     var num=10;
     var topic;
 
+    function setCookie(cname, cvalue, exdays) {
+	  var d = new Date();
+	  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	  var expires = "expires="+d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+	  var name = cname + "=";
+	  var ca = document.cookie.split(';');
+	  for(var i = 0; i < ca.length; i++) {
+	    var c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+	
+	function checkCookie() { 
+	  var cookie = getCookie("favorite");
+	  if (cookie != "") {
+          favor=JSON.parse(getCookie("favorite"));
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
+
     function showButton() {
         $("#buttons").empty();
         for (var i=0;i<topics.length;i++) {
@@ -99,10 +131,19 @@ $(document).ready(function() {
 
     $(document).on("click","button",function(){
 
-        if($(this).hasClass("fav") || $(this).hasClass("download")) {
+        if($(this).hasClass("fav") || $(this).hasClass("download") || $(this).hasClass("del")) {
             if($(this).hasClass("fav")){
-                var clone=$(this).siblings("img").clone();
-                favor.push(clone);
+                var obj={
+                    "still":$(this).siblings("img").attr("data-still"), 
+                    "gif":$(this).siblings("img").attr("data-gif"), 
+                    "rate":$(this).siblings("img").attr("data-rate"), 
+                    "title":$(this).siblings("img").attr("data-title")
+                }
+                favor.push(obj); 
+                setCookie("favorite",JSON.stringify(favor),1);
+            } else if($(this).hasClass("del")) {
+                favor.splice((this).attr("data-del"),1);
+                $(this).parent().remove();
             }
         } else {
             $(".favorite").hide();
@@ -156,7 +197,7 @@ $(document).ready(function() {
 
     $(document).on("click","#submit",function(e){
         e.preventDefault();
-        topics.push($("input").val());
+        topics.push($("input").val().trim());
         showButton();
         $("#buttons button:last-child").trigger("click");
     });
@@ -165,23 +206,27 @@ $(document).ready(function() {
         $(".favorite").empty();
         $(".favorite").show();
         $(".container").hide();
-        for(var i=0;i<favor.length;i++) {
-            var rating=favor[i].attr("data-rate");
-            var title=favor[i].attr("data-title");
-            var stillImage=favor[i].attr("data-still");
-            var movingImage=favor[i].attr("data-gif");
-            var col2=$("<div>");
-            col2.addClass("each");
-            col2.append("<h2>Raiting: "+rating+"</h2>");
-            col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate:'"+rating+"' data-title='"+title+"'>");
-            col2.append("<h3>Title: "+title+"</h3>");
-            $(".favorite").append(col2);
+        if(checkCookie()) {
+            for(var i=0;i<favor.length;i++) {
+                var rating=favor[i].rate;
+                var title=favor[i].title;
+                var stillImage=favor[i].still;
+                var movingImage=favor[i].gif;
+                var col2=$("<div>");
+                col2.addClass("each");
+                col2.append("<h2>Raiting: "+rating+"</h2>");
+                col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate:'"+rating+"' data-title='"+title+"'>");
+                col2.append("<h3>Title: "+title+"</h3>");
+                col2.append("<button class='del' data-del='"+i+"'>Favorite</button>");
+                $(".favorite").append(col2);
+            }
         }
     });
 
     showButton();
     showInput();
     myFavorite();
+    checkCookie();
 });
 </script>
 <body>
