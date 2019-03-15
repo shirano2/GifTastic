@@ -142,7 +142,7 @@ $(document).ready(function() {
                 favor.push(obj); 
                 setCookie("favorite",JSON.stringify(favor),1);
             } else if($(this).hasClass("del")) {
-                favor.splice((this).attr("data-del"),1);
+                favor.splice($(this).attr("data-del"),1);
                 $(this).parent().remove();
                 console.log($(this).parent());
                 setCookie("favorite",JSON.stringify(favor),1);
