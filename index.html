@@ -144,6 +144,8 @@ $(document).ready(function() {
             } else if($(this).hasClass("del")) {
                 favor.splice((this).attr("data-del"),1);
                 $(this).parent().remove();
+                console.log($(this).parent());
+                setCookie("favorite",JSON.stringify(favor),1);
             }
         } else {
             $(".favorite").hide();
@@ -217,7 +219,7 @@ $(document).ready(function() {
                 col2.append("<h2>Raiting: "+rating+"</h2>");
                 col2.append("<img src='"+stillImage+"' data-still='"+stillImage+"' data-gif='"+movingImage+"' data-status='still' data-rate:'"+rating+"' data-title='"+title+"'>");
                 col2.append("<h3>Title: "+title+"</h3>");
-                col2.append("<button class='del' data-del='"+i+"'>Favorite</button>");
+                col2.append("<button class='del' data-del='"+i+"'>delete</button>");
                 $(".favorite").append(col2);
             }
         }
