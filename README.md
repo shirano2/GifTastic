@@ -4,7 +4,7 @@ You can find various gifs by searching of topics through GIPHY API.
 
 
 ## Site
-https://github.com/shirano2
+https://shirano2.github.io/GifTastic/
 
 
 ### Technologies Used
