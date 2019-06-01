@@ -14,7 +14,7 @@ https://shirano2.github.io/GifTastic/
 * jQuery
 * Javascript
 * AJAX
-* Cookie
+* Cookies
 * GIPHY API
 
 
