@@ -11,7 +11,7 @@ https://shirano2.github.io/GifTastic/
 
 * HTML5
 * CSS3
-* jQuery
+* JQuery
 * Javascript
 * AJAX
 * Cookies
